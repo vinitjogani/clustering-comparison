@@ -24,7 +24,7 @@ def train_algo(dataset, algo):
 def train_kmeans(dataset):
     path = f"readings/kmeans_{dataset}.pkl"
     if os.path.exists(path):
-        pickle.load(open(path, "rb"))
+        return pickle.load(open(path, "rb"))
     out = train_algo(dataset, KMeans)
     pickle.dump(out, open(path, "wb"))
     return out
@@ -33,7 +33,7 @@ def train_kmeans(dataset):
 def train_gmm(dataset):
     path = f"readings/gmm_{dataset}.pkl"
     if os.path.exists(path):
-        pickle.load(open(path, "rb"))
+        return pickle.load(open(path, "rb"))
     out = train_algo(dataset, GaussianMixture)
     pickle.dump(out, open(path, "wb"))
     return out
