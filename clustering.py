@@ -16,8 +16,8 @@ def train_algo(dataset, algo):
         model = algo(k)
         y_pred = model.fit_predict(X)
         score = calinski_harabasz_score(X, y_pred)
-        out[k] = (model, score)
-        print(k, score)
+        out[k] = (k, model, score)
+        print(out[k])
     return out
 
 

@@ -24,7 +24,7 @@ class RFCA:
         self.feature_importances_ /= self.feature_importances_.sum()
 
     def transform(self, X, n_components):
-        return X[self.ranked_features_[:n_components]]
+        return X[:, self.ranked_features_[:n_components]]
 
     def inverse_transform(self, X):
         n = X.shape[1]
