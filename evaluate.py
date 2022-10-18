@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import auc, precision_recall_curve
 from sklearn.model_selection import KFold
+from sklearn.tree import DecisionTreeClassifier
 
 
 def pr_auc_score(y_true, y_score):
@@ -28,3 +29,11 @@ def lr_mean_auc_score(X, y):
         y_pred = lr.predict_proba(X_test)
         aucs.append(pr_auc_score(y_test, y_pred))
     return np.mean(aucs)
+
+
+def dt_mean_auc_score(y_pred, y_true):
+    X = y_pred.reshape((-1, 1))
+    dt = DecisionTreeClassifier(class_weight="balanced")
+    dt.fit(X, y_true)
+    y_pred = dt.predict_proba(X)
+    return pr_auc_score(y_true, y_pred)

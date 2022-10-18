@@ -6,18 +6,20 @@ from sklearn.metrics import calinski_harabasz_score
 from sklearn.mixture import GaussianMixture
 
 from datasets import *
+from evaluate import dt_mean_auc_score
 
 
 def train_algo(dataset, algo):
-    X, _ = load_dataset(dataset)
+    X, y = load_dataset(dataset)
     n_clusters = [2, 4, 8, 16, 32, 48, 64]
-    out = {}
+    out = []
     for k in n_clusters:
         model = algo(k)
         y_pred = model.fit_predict(X)
         score = calinski_harabasz_score(X, y_pred)
-        out[k] = (k, model, score)
-        print(out[k])
+        auc = dt_mean_auc_score(y_pred, y)
+        out.append((k, score, auc))
+        print(out[-1])
     return out
 
 
