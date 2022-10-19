@@ -10,7 +10,7 @@ from sklearn.random_projection import SparseRandomProjection
 from datasets import load_dataset
 from evaluate import lr_mean_auc_score
 
-N_COMPONENTS = [2, 4, 8, 16, 32, 48, 56]
+N_COMPONENTS = [2, 5, 8, 10, 15, 32, 40, 50, 55]
 
 
 class RFCA:
@@ -35,12 +35,15 @@ class RFCA:
 
 def train_pca(dataset):
     path = f"readings/pca_{dataset}.pkl"
+    out = []
     if os.path.exists(path):
-        return pickle.load(open(path, "rb"))
+        out = pickle.load(open(path, "rb"))
 
     X, y = load_dataset(dataset)
-    out = []
-    for n_components in N_COMPONENTS:
+    for n_components in N_COMPONENTS + [X.shape[1]]:
+        for item in out:
+            if item[0] == n_components:
+                continue
         pca = PCA(n_components, random_state=0)
         X_trans = pca.fit_transform(X)
         X_recon = pca.inverse_transform(X_trans)
@@ -49,7 +52,7 @@ def train_pca(dataset):
             (
                 n_components,
                 error,
-                pca.explained_variance_ratio_[-1],
+                np.sum(pca.explained_variance_ratio_),
                 lr_mean_auc_score(X_trans, y),
             )
         )
@@ -59,12 +62,15 @@ def train_pca(dataset):
 
 def train_ica(dataset):
     path = f"readings/ica_{dataset}.pkl"
+    out = []
     if os.path.exists(path):
-        return pickle.load(open(path, "rb"))
+        out = pickle.load(open(path, "rb"))
 
     X, y = load_dataset(dataset)
-    out = []
-    for n_components in N_COMPONENTS:
+    for n_components in N_COMPONENTS + [X.shape[1]]:
+        for item in out:
+            if item[0] == n_components:
+                continue
         ica = FastICA(n_components, random_state=0)
         X_trans = ica.fit_transform(X)
         X_recon = ica.inverse_transform(X_trans)
@@ -73,7 +79,7 @@ def train_ica(dataset):
             (
                 n_components,
                 error,
-                kurtosis(X_trans, axis=0).mean(),
+                np.abs(kurtosis(X_trans)).mean(),
                 lr_mean_auc_score(X_trans, y),
             )
         )
@@ -83,12 +89,15 @@ def train_ica(dataset):
 
 def train_rca(dataset):
     path = f"readings/rca_{dataset}.pkl"
+    out = []
     if os.path.exists(path):
-        return pickle.load(open(path, "rb"))
+        out = pickle.load(open(path, "rb"))
 
     X, y = load_dataset(dataset)
-    out = []
-    for n_components in N_COMPONENTS:
+    for n_components in N_COMPONENTS + [X.shape[1]]:
+        for item in out:
+            if item[0] == n_components:
+                continue
         errors = []
         aucs = []
         for i in range(5):
@@ -115,14 +124,17 @@ def train_rca(dataset):
 
 def train_rfca(dataset):
     path = f"readings/rfca_{dataset}.pkl"
+    out = []
     if os.path.exists(path):
-        return pickle.load(open(path, "rb"))
+        out = pickle.load(open(path, "rb"))
 
     X, y = load_dataset(dataset)
     rfca = RFCA()
     rfca.fit(X, y)
-    out = []
-    for n_components in N_COMPONENTS:
+    for n_components in N_COMPONENTS + [X.shape[1]]:
+        for item in out:
+            if item[0] == n_components:
+                continue
         X_trans = rfca.transform(X, n_components)
         X_recon = rfca.inverse_transform(X_trans)
         error = ((X_recon - X) ** 2).sum(axis=1).mean()
