@@ -2,7 +2,7 @@ import os
 import pickle
 
 from sklearn.cluster import KMeans
-from sklearn.metrics import calinski_harabasz_score
+from sklearn.metrics import calinski_harabasz_score, silhouette_score, homogeneity_score
 from sklearn.mixture import GaussianMixture
 
 from datasets import *
@@ -14,11 +14,14 @@ def train_algo(dataset, algo):
     n_clusters = [2, 4, 8, 16, 32, 48, 64]
     out = []
     for k in n_clusters:
+        print(dataset, algo, k)
         model = algo(k)
         y_pred = model.fit_predict(X)
         score = calinski_harabasz_score(X, y_pred)
         auc = dt_mean_auc_score(y_pred, y)
-        out.append((k, score, auc))
+        silhouette = silhouette_score(X, y_pred, sample_size=10_000)
+        homogeneity = homogeneity_score(y, y_pred)
+        out.append((k, score, auc, silhouette, homogeneity))
         print(out[-1])
     return out
 
