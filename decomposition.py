@@ -15,7 +15,7 @@ N_COMPONENTS = [2, 5, 8, 10, 15, 32, 40, 50, 55]
 
 class RFCA:
     def __init__(self):
-        self.rf = RandomForestClassifier(n_jobs=16)
+        self.rf = RandomForestClassifier(n_jobs=16, random_state=0)
 
     def fit(self, X, y):
         self.rf.fit(X, y)
@@ -33,6 +33,13 @@ class RFCA:
         return out
 
 
+def already_done(n, out):
+    for item in out:
+        if item[0] == n:
+            return True
+    return False
+
+
 def train_pca(dataset):
     path = f"readings/pca_{dataset}.pkl"
     out = []
@@ -41,9 +48,9 @@ def train_pca(dataset):
 
     X, y = load_dataset(dataset)
     for n_components in N_COMPONENTS + [X.shape[1]]:
-        for item in out:
-            if item[0] == n_components:
-                continue
+        if already_done(n_components, out):
+            continue
+        print(n_components)
         pca = PCA(n_components, random_state=0)
         X_trans = pca.fit_transform(X)
         X_recon = pca.inverse_transform(X_trans)
@@ -68,9 +75,9 @@ def train_ica(dataset):
 
     X, y = load_dataset(dataset)
     for n_components in N_COMPONENTS + [X.shape[1]]:
-        for item in out:
-            if item[0] == n_components:
-                continue
+        if already_done(n_components, out):
+            continue
+        print(n_components)
         ica = FastICA(n_components, random_state=0)
         X_trans = ica.fit_transform(X)
         X_recon = ica.inverse_transform(X_trans)
@@ -95,9 +102,9 @@ def train_rca(dataset):
 
     X, y = load_dataset(dataset)
     for n_components in N_COMPONENTS + [X.shape[1]]:
-        for item in out:
-            if item[0] == n_components:
-                continue
+        if already_done(n_components, out):
+            continue
+        print(n_components)
         errors = []
         aucs = []
         for i in range(5):
@@ -132,9 +139,9 @@ def train_rfca(dataset):
     rfca = RFCA()
     rfca.fit(X, y)
     for n_components in N_COMPONENTS + [X.shape[1]]:
-        for item in out:
-            if item[0] == n_components:
-                continue
+        if already_done(n_components, out):
+            continue
+        print(n_components)
         X_trans = rfca.transform(X, n_components)
         X_recon = rfca.inverse_transform(X_trans)
         error = ((X_recon - X) ** 2).sum(axis=1).mean()
