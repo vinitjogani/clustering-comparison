@@ -14,7 +14,7 @@ from evaluate import dt_mean_auc_score
 
 def ica(dataset, X, y):
     _c = {
-        "credit_score": 5,
+        "credit_score": 30,
         "term_deposits": 50,
     }
 
