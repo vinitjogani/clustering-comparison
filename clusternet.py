@@ -90,8 +90,8 @@ def by_training_size(dataset):
 
     for algo, key in get_models():
         cache = f"readings/trainsize_{key}.pkl"
+        print(cache)
         if os.path.exists(cache):
-            print("Skipping", cache)
             continue
 
         X_trans = algo(X)
@@ -99,7 +99,7 @@ def by_training_size(dataset):
         train_auc = []
         test_auc = []
         timings = []
-        for size in [0.2, 0.4, 0.6, 0.8, 0.99]:
+        for size in [0.2, 0.4, 0.6, 0.8, 0.9]:
             X_train, X_test, y_train, y_test = train_test_split(
                 X_trans, y, test_size=1 - size
             )
