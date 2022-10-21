@@ -33,6 +33,11 @@ def by_iterations(dataset):
     X, y = load_dataset(dataset)
 
     for algo in [pca, ica, rca, rfca, none]:
+        cache = f"readings/iter_{algo.__name__}_{dataset}.pkl"
+        if os.path.exists(cache):
+            print("Skipping", cache)
+            continue
+
         X_trans = algo(dataset, X, y)
 
         X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.2)
@@ -40,10 +45,6 @@ def by_iterations(dataset):
         model = MLPClassifier(
             best_size(algo.__name__), max_iter=100, warm_start=True, **KWARGS
         )
-        cache = f"readings/iter_{algo.__name__}_{dataset}.pkl"
-
-        if os.path.exists(cache):
-            continue
 
         train_loss = []
         test_loss = []
@@ -67,16 +68,17 @@ def by_training_size(dataset):
     X, y = load_dataset(dataset)
 
     for algo in [pca, ica, rca, rfca, none]:
-        X_trans = algo(dataset, X, y)
-
         cache = f"readings/trainsize_{algo.__name__}_{dataset}.pkl"
         if os.path.exists(cache):
+            print("Skipping", cache)
             continue
+
+        X_trans = algo(dataset, X, y)
 
         train_auc = []
         test_auc = []
         timings = []
-        for size in [0.2, 0.4, 0.6, 0.8, 1.0]:
+        for size in [0.2, 0.4, 0.6, 0.8, 0.99]:
             X_train, X_test, y_train, y_test = train_test_split(
                 X_trans, y, test_size=1 - size
             )

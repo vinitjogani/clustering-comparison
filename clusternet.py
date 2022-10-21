@@ -27,7 +27,10 @@ def model_generator(algo, n, replacement, soft):
         model.fit(X)
 
         if soft:
-            preds = model.transform(X)
+            if hasattr(model, "transform"):
+                preds = model.transform(X)
+            else:
+                preds = model.predict_proba(X)
         else:
             preds = model.predict(X)
             preds = np.eye(n)[preds]
@@ -54,15 +57,15 @@ def by_iterations(dataset):
     X, y = load_dataset(dataset)
 
     for algo, key in get_models():
-        X_trans = algo(X)
-
-        X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.2)
-
-        model = MLPClassifier((512, 256), max_iter=100, warm_start=True, **KWARGS)
         cache = f"readings/iter_{key}.pkl"
 
         if os.path.exists(cache):
+            print("Skipping", cache)
             continue
+
+        X_trans = algo(X)
+        X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.2)
+        model = MLPClassifier((512, 256), max_iter=100, warm_start=True, **KWARGS)
 
         train_loss = []
         test_loss = []
@@ -86,16 +89,17 @@ def by_training_size(dataset):
     X, y = load_dataset(dataset)
 
     for algo, key in get_models():
-        X_trans = algo(X)
-
         cache = f"readings/trainsize_{key}.pkl"
         if os.path.exists(cache):
+            print("Skipping", cache)
             continue
+
+        X_trans = algo(X)
 
         train_auc = []
         test_auc = []
         timings = []
-        for size in [0.2, 0.4, 0.6, 0.8, 1.0]:
+        for size in [0.2, 0.4, 0.6, 0.8, 0.99]:
             X_train, X_test, y_train, y_test = train_test_split(
                 X_trans, y, test_size=1 - size
             )
