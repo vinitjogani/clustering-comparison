@@ -12,13 +12,14 @@ from decomposition import RFCA
 from evaluate import dt_mean_auc_score
 
 
-def ica(dataset, X, y):
+def ica(dataset, X, y, n=None):
     _c = {
         "credit_score": 30,
         "term_deposits": 50,
     }
-
-    ica = FastICA(_c[dataset], random_state=0)
+    if n is None:
+        n = _c[dataset]
+    ica = FastICA(n, random_state=0)
     X_trans = ica.fit_transform(X)
     return X_trans
 
@@ -40,7 +41,7 @@ def rca(dataset, X, y):
         "term_deposits": 40,
     }
 
-    rca = SparseRandomProjection(_c[dataset], random_state=0)
+    rca = SparseRandomProjection(_c[dataset])
     X_trans = rca.fit_transform(X)
     return X_trans
 

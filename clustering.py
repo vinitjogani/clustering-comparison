@@ -21,7 +21,7 @@ def train_algo(dataset, algo):
         auc = dt_mean_auc_score(y_pred, y)
         silhouette = silhouette_score(X, y_pred, sample_size=10_000)
         homogeneity = homogeneity_score(y, y_pred)
-        out.append((k, score, auc, silhouette, homogeneity))
+        out.append((k, score, auc, silhouette, homogeneity, model.inertia_))
         print(out[-1])
     return out
 

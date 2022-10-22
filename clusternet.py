@@ -44,7 +44,7 @@ def model_generator(algo, n, replacement, soft):
 
 
 def get_models():
-    for algo_name, algo, n in [("kmeans", KMeans, 30), ("gmm", GaussianMixture, 30)]:
+    for algo_name, algo, n in [("kmeans", KMeans, 4), ("gmm", GaussianMixture, 4)]:
         for replacement in [True, False]:
             for soft in [True, False]:
                 r_key = "replace" if replacement else "add"
