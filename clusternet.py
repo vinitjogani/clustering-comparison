@@ -65,7 +65,7 @@ def by_iterations(dataset):
 
         X_trans = algo(X)
         X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.2)
-        model = MLPClassifier((512, 256), max_iter=100, warm_start=True, **KWARGS)
+        model = MLPClassifier((512, 256), max_iter=2, warm_start=True, **KWARGS)
 
         train_loss = []
         test_loss = []
@@ -79,7 +79,7 @@ def by_iterations(dataset):
             y_pred = model.predict_proba(X_test)
             loss = log_loss(y_test, y_pred)
             test_loss.append(loss)
-            model.set_params(max_iter=i * 100 + 100)
+            model.set_params(max_iter=i * 3 + 2)
 
         out = {"train_loss": train_loss, "test_loss": test_loss}
         pickle.dump(out, open(cache, "wb"))

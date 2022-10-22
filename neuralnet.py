@@ -33,7 +33,7 @@ def by_iterations(dataset):
     X, y = load_dataset(dataset)
 
     for algo in [pca, ica, rca, rfca, none]:
-        cache = f"readings/iter_{algo.__name__}_{dataset}.pkl"
+        cache = f"readings/iter_{algo.__name__}.pkl"
         if os.path.exists(cache):
             print("Skipping", cache)
             continue
@@ -43,13 +43,13 @@ def by_iterations(dataset):
         X_train, X_test, y_train, y_test = train_test_split(X_trans, y, test_size=0.2)
 
         model = MLPClassifier(
-            best_size(algo.__name__), max_iter=100, warm_start=True, **KWARGS
+            best_size(algo.__name__), max_iter=2, warm_start=True, **KWARGS
         )
 
         train_loss = []
         test_loss = []
 
-        for i in range(5):
+        for i in range(6):
             print(i)
             model.fit(X_train, y_train)
             y_pred = model.predict_proba(X_train)
@@ -58,7 +58,7 @@ def by_iterations(dataset):
             y_pred = model.predict_proba(X_test)
             loss = log_loss(y_test, y_pred)
             test_loss.append(loss)
-            model.set_params(max_iter=i * 100 + 100)
+            model.set_params(max_iter=i * 3 + 2)
 
         out = {"train_loss": train_loss, "test_loss": test_loss}
         pickle.dump(out, open(cache, "wb"))
