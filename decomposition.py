@@ -86,7 +86,7 @@ def train_ica(dataset):
             (
                 n_components,
                 error,
-                np.abs(kurtosis(X_trans)).mean(),
+                kurtosis(ica.components_, axis=1).mean(),
                 lr_mean_auc_score(X_trans, y),
             )
         )
